@@ -1,5 +1,5 @@
 
-#Blind SQL Injection Tool for ethical penetration testing
+#Boolean Blind SQL Injection Tool for ethical penetration testing
 #    Copyright (C) 2021  Hamish Starling
 
 # This program is free software: you can redistribute it and/or modify
