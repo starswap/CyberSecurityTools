@@ -1,12 +1,14 @@
-#It tends to be the later transpositions that use this method. Use other program - transposition AUTO Row if it's read off by row
-#This program will automatically run through all possible keys up to length ten, using the read off by columns method. If read off by row, you can use the autopad program and then the row program. This is the method employed by Practical and by default by dcode.fr.
+#Write by row; read by columns method
 
+#Import necessary packages including my own
 import copy
 import math
 import collections
+import itertools
 from statistics import QuadgramSetup, GetLikelihood
+
+#Get cipher text and remove special characters
 text = raw_input("Enter text:").upper()
-#keyword = raw_input("enter keyword").upper()
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 text = text.replace(" ","")
 text = text.replace(".","")
@@ -15,40 +17,40 @@ text = text.replace(":","")
 text = text.replace("'","")
 text = text.replace(";","")
 
+#Set up the Quadgram score fitness metric which will be used to determine the best solution 
 QuadgramSetup()
 
-import itertools
-
-count = 9 # keyLength
-print(alphabet[:count])
-
-
-bestPlains = ["","","","",""]
-bestLikelihoods = [-1000000,-1000000,-1000000,-1000000,-1000000]
-bestKeys = ["","","","",""]
-
+#Save to use when padding
 originalText = text
+
+#For each possible key length
 for count in range(1,10):
     
+    #Top 5 plain texts for each key length
+    bestPlains = ["","","","",""]
+    bestLikelihoods = [-1000000,-1000000,-1000000,-1000000,-1000000]
+    bestKeys = ["","","","",""]
+
+    #Padding
     if len(originalText) % count != 0:
         text = originalText + (((((len(originalText) // count) + 1) * count) - len(originalText)) * ".")
     else:
         text = originalText
-    print(count)
-    print(text)
 
-
-    keys= []
-    print(alphabet[:count])
+    #We will brute force all keys
+    keys = []
+    print(alphabet[:count]) # Shows the user the current key length being tried
+    
+    #Get all possible keys
     for item in itertools.permutations(alphabet[:count], count):
         string = ''.join(item)
         keys.append(string)
 
+    #For all possible keys
     for keyNumber,keyword in enumerate(keys):
-        alphKey = ''.join(sorted(keyword))
+        
+        alphKey = ''.join(sorted(keyword)) 
         rows = int(len(text)/len(keyword))
-    #print(table)
-    #Decrypt = {}
         chars = []
         for i in range (len(alphKey)):
             chars.append(text[i*rows:(i+1)*rows])
@@ -65,10 +67,7 @@ for count in range(1,10):
             for col in decrypt:
                 Final += col[i]
         like = float(GetLikelihood(Final))
-        #print(like)
         for i,num in enumerate(bestLikelihoods):
-        #   print(num)
-          #  print(i)
             if Final == bestPlains[i]:
                 break
             if like > float(num):
@@ -77,6 +76,6 @@ for count in range(1,10):
                 bestKeys[i] = keyword
                 break
         if keyNumber % 1000 == 0:
-          # print(bestPlains)
             print(keyNumber)
+            
     print(bestPlains[0])
